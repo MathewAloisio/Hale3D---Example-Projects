@@ -1,0 +1,3 @@
+texture0="Resources/Textures/bob_body_diffuse.tga"
+texture2="Resources/Textures/bob_body_normal.tga"
+shader="Resources/Shaders/diffuse_norm"

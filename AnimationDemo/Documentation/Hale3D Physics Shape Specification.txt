@@ -1,0 +1,16 @@
+Hale3D physics material format specification:
+
+NOTE: Indentation in the specification represents the need for a loop to read the data.
+	 The # of occurances of a data-type will be listed just before the indent, beside the type.
+	 
+DESCRIPTION: A file that holds a 3D physics shape. One .psf file may only hold a single physics shape.
+
+File extension: .psf	 
+	 
+.:Little Endian byte order:.
+(1)  Bytes: 0->4		= ID							  (uint32_t)
+(2)  Bytes: 4->6		= Version						  (uint16_t)
+(3)  Bytes: 6->Varies	= Shape data					  (CollisionShape)
+
+Remarks: 
+		(1.) ID should be equal to ('S' << 24) + ('Y' << 16) + ('H' << 8) + 'P', which resolves to 1398360144.

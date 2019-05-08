@@ -1,0 +1,1 @@
+start "AnimationDemo (Console)" "AnimationDemo-Debug.exe" "-console"

@@ -1,0 +1,4 @@
+texture0="Resources/Textures/bob_helmet_diffuse.tga"
+texture1="Resources/Textures/bob_helmet_specular.tga"
+texture2="Resources/Textures/bob_helmet_normal.tga"
+shader="Resources/Shaders/diffuse_norm_spec"

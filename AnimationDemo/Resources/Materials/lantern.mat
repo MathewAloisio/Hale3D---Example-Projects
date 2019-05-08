@@ -1,0 +1,3 @@
+texture0="Resources/Textures/lantern_diffuse.tga"
+texture2="Resources/Textures/lantern_normal.tga"
+shader="Resources/Shaders/diffuse_norm"

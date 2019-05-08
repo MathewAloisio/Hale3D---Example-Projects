@@ -1,0 +1,35 @@
+Hale3D skybox format specification:
+
+NOTE: Indentation in the specification represents the need for a loop to read the data.
+	 The # of occurances of a data-type will be listed just before the indent, beside the type.
+
+DESCRIPTION: A file that holds a skybox consisting of 6 TGA images, one per face.
+	 
+File extension: .skybox
+	 
+.:Little Endian byte order:.
+(1)  Bytes: 0->4		= ID							  (uint32_t)
+(2)  Bytes: 4->8		= Version						  (uint32_t)
+(3)	 Bytes: 8->Varies	= Shader path					  (std::string)
+(4)  Bytes: ??			= Image data.					  (TGAManager * 6)
+		-- TGAManager --
+		(4.a) CubeFace::Right							  (TGAManager)
+		(4.b) CubeFace::Left							  (TGAManager)
+		(4.c) CubeFace::Top							  	  (TGAManager)
+		(4.d) CubeFace::Bottom							  (TGAManager)
+		(4.e) CubeFace::Front 							  (TGAManager)
+		(4.f) CubeFace::Back							  (TGAManager)
+		
+Remarks: 
+		(1.) ID should be equal to ('B' << 24) + ('Y' << 16) + ('K' << 8) + 'S', which resolves to 1113148243.
+
+Relevant structure(s):
+	enum class CubeFace : uint8_t {
+		Right,
+		Left,
+		Top,
+		Bottom,
+		Front,
+		Back
+	};
+	typedef EnumerateArray<CubeFace, TGAManager, 6> CubemapFaceArray;

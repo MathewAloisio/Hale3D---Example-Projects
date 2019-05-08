@@ -1,0 +1,92 @@
+Hale3D animation format specification:
+
+NOTE: Indentation in the specification represents the need for a loop to read the data.
+	 The # of occurances of a data-type will be listed just before the indent, beside the type.
+
+DESCRIPTION: A file that holds animations for 3D models.
+	 Animations are made for a given skeleton.
+	 Models that share the same skeleton(frame) may use the animation.
+	 
+File extension: .anim	 
+	 
+.:Little Endian byte order:.
+(1)  Bytes: 0->4		= ID							  (uint32_t)
+(2)  Bytes: 4->8		= Version						  (uint32_t)
+(3)  Bytes: 8->12 		= Frame count					  (uint32_t)
+(4)  Bytes: 12->16		= Frame rate                      (uint32_t)
+(5)  Bytes: 16->20      = Joint count					  (uint32_t)
+(6)  Bytes: 20->24      = Animated component count        (uint32_t)
+(7)	 Bytes: 24->Varies  = Joint info data & baseframe	  ((JointInfo + BaseFrameJoint) * Joint count)
+	Remarks: JointInfo and BaseFrameJoint information is written back-to-back to make reading faster. (Only 1 loop needed.)
+		-- JointInfo --
+		(7.a) JointInfo::parent				(int32_t)
+		(7.b) JointInfo::flags				(uint32_t)
+		(7.c) JointInfo::startIndex			(uint32_t)
+		(7.d) JointInfo::name				(std::string)
+		-- BaseFrameJoint --
+		(7.e) BaseFrameJoint::position		(Vector3)
+		(7.f) BaseFrameJoint::orientation	(Quaternion)
+(8)  Bytes: Varies		= Bounding box and frame data	((AABB + (float * Animated component count)) * Frame count)
+		-- AABB --
+		(8.a) AABB::min						(Vector3)
+		(8.b) AABB::max						(Vector3)
+		-- Frame Data --
+		(8.c) Frame data					(float * Animated component count)
+			Remarks: The skeleton for the frame should be built after this is read.
+		
+Remarks: 
+		(1.) ID should be equal to ('A' << 24) + ('D' << 16) + ('3' << 8) + 'H', which resolves to 1094988616.
+		(2.) This is a binary animation format inspired by Doom 3's MD5 model format.
+
+// Structures and types to know.
+struct Vector3 {
+	float x;
+	float y;
+	float z;
+};
+
+struct AABB {
+	Vector3 min;
+	Vector3 max;
+};
+
+struct Quaternion {
+	float x;
+	float y;
+	float z;
+	float w;
+};
+
+struct Joint {
+	int32_t parent;
+	Vector3 position;
+	Quaternion orientation;
+	std::string name;
+};
+
+struct JointInfo {
+	int32_t parent;
+	uint32_t flags;
+	uint32_t startIndex;
+	std::string name;
+};
+
+struct BaseFrameJoint {
+	Vector3 position;
+	Quaternion orientation; 
+};
+
+struct AnimationInfo {
+	struct {
+		uint32_t next;
+		uint32_t current;
+	} frame;
+
+	struct {
+		double max;
+		double last;
+	} time;
+};
+
+References:
+	- MD5 Model format (Resource used: http://tfc.duke.free.fr/coding/md5-specs-en.html)

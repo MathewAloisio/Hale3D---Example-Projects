@@ -1,0 +1,115 @@
+Hale3D model format specification:
+
+NOTE: Indentation in the specification represents the need for a loop to read the data.
+	 The # of occurances of a data-type will be listed just before the indent, beside the type.
+
+DESCRIPTION: A file that holds 3D models composed of one or more meshes. 
+	 Each mesh is composed of vertices, weights, triangles, and a relative path to a material file.
+	 
+File extension: .mdl 
+	 
+.:Little Endian byte order:.
+(1)  Bytes: 0->4		= ID							  (uint32_t)
+(2)  Bytes: 4->8		= Version						  (uint32_t)
+(3)  Bytes: 8->12		= Mesh count					  (uint32_t)
+(4)  Bytes: 12->16		= Joint count				      (uint32_t)
+(5)  Bytes: 16->Varies  = Mesh data                       (Mesh * Mesh count)
+		(5.a)  Bytes: Varies  = Vertex count of mesh.		   (uint32_t)
+		(5.b)  Bytes: Varies  = Weight count of mesh.		   (uint32_t)
+		(5.c)  Bytes: Varies  = Triangle count of mesh.		   (uint32_t)
+		(5.d)  Bytes: Varies  = Material path for mesh.   	   (std::string)
+		(5.e)  Bytes: Varies  = Vertex data of mesh.           (VertexInfo * Vertex count of mesh)
+		(5.f)  Bytes: Varies  = Weight data of mesh.           (Weight * Weight count of mesh)
+		(5.g)  Bytes: Varies  = Triangle data of mesh.         (Triangle * Triangle count of mesh)
+		
+(6)  Bytes: Varies      = Joint data                       (Joint * Joint count)
+		(6.a)  Bytes: Varies  = Parent ID of joint.        (int32_t)
+			Remarks: The parent joint ID will be -1 in cases where the joint
+				has no parent.
+		(6.b)  Bytes: Varies  = Position of joint.         (Vector3)
+		(6.c)  Bytes: Varies  = Orientation of joint.      (Vector3)
+			Remarks: The orientation of the joint is represented by a unit Quaternion...
+				to compute the desired quaternion we build a quaternion where
+				x, y, z are equal to the read vector componenets, the 
+				'w' member of the unit quaternion must be computed with:
+				
+				static void ComputeWComponent(Quaternion& pQuat) {
+					float t = 1.0f - (pQuat.x * pQuat.x) - (pQuat.y * pQuat.y) - (pQuat.z * pQuat.z);
+					if (t < 0.0f) {
+						pQuat.w = 0.0f;
+					}
+					else { pQuat.w = -std::sqrt(t); }
+				}
+				
+				or an equivalent operation. The 'w' component of the joint's orientation
+				MUST be calculated after loading the joint.
+		(6.d)  Bytes: Varies  = Name of joint.             (std::string)
+
+Remarks: 
+		(1.) ID should be equal to ('M' << 24) + ('D' << 16) + ('3' << 8) + 'H', which resolves to 1296315208.
+		(2.) This is a binary model format inspired by Doom 3's MD5, after loading a model the same concepts for rendering apply.
+		(3.) The vertex position/normal/tangent/bitangent values of the bind-pose skeleton and the final vertex position/normal/... must be computed manually.
+		(4.) The texture coordinates stored in the model file describe a 2D position from an upper-left origin.
+		
+// Structures and types to know.
+typedef std::array<uint32_t, 3> Triangle;
+
+struct Vector2 {
+	float x;
+	float y;
+};
+
+struct Vector3 {
+	float x;
+	float y;
+	float z;
+};
+
+struct Quaternion {
+	float x;
+	float y;
+	float z;
+	float w;
+};
+
+struct VertexInfo {
+	Vector2 st;
+
+	struct {
+		uint32_t start;
+		uint32_t count;
+	} weight;
+};
+
+struct Weight {
+	float bias;
+	int32_t joint;
+	Vector3 position;
+};
+
+struct Joint {
+	int32_t parent;
+	Vector3 position;
+	Quaternion orientation;
+	std::string name;
+};
+
+struct Mesh {
+	std::vector<VertexInfo> vertexInfo;
+	std::vector<Weight> weights;
+	std::vector<Triangle> triangles;
+	std::vector<std::string> materials;
+
+	void Draw();
+};
+
+struct Model {
+	uint32_t id; // Should equal 1296315208 after the model is loaded. (See Remarks #1.)
+	uint32_t version;
+	
+	std::vector<Mesh> meshes;
+	std::vector<Joint> skeleton; // Bind-pose skeleton.
+};
+
+References:
+	- MD5 Model format (Resource used: http://tfc.duke.free.fr/coding/md5-specs-en.html)

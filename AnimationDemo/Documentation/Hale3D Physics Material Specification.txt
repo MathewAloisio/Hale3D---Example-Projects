@@ -1,0 +1,51 @@
+Hale3D physics material format specification:
+
+NOTE: Indentation in the specification represents the need for a loop to read the data.
+	 The # of occurances of a data-type will be listed just before the indent, beside the type.
+
+DESCRIPTION: A file that holds physical properties for a material.
+	 The file contains--
+		1) Bounciness, (aka the coefficient of restitution) is the ratio of the final velocity to the initial velocity between
+		  two objects after they collide. Simply put, controls the bounciness of the material.
+		2) Bounciness combine, controls how the cofficients of resitution are combined between
+		  the two objects during a collision.
+		3) Dynamic friction, controls the coefficient of dynamic friction for the material.
+		  The friction acting on the material while in motion.
+		4) Dynamic friction combine, controls how the coefficients of dynamic friction are
+		  combined between the two objects during a collision.
+		5) Static friction, controls the coefficient of static friction for the material.
+		 The friction acting on the material while at rest.
+		6) Static friction combine, controls how the coefficients of static friction are combined
+		  between the two objects during a collision.
+	 
+File extension: .pmf	 
+	 
+.:Little Endian byte order:.
+(1)  Bytes: 0->4		= ID							  (uint32_t)
+(2)  Bytes: 4->6		= Version						  (uint16_t)
+(3)  Bytes: 6->10		= Bounciness                      (float)
+(4)	 Bytes: 10->11		= Bounciness Combine			  (uint8_t)
+(5)	 Bytes: 11->15		= Dynamic Friction				  (float)
+(6)	 Bytes: 15->16		= Dynamic Friction Combine		  (uint8_t)
+(7)	 Bytes: 16->20		= Static Friction				  (float)
+(8)	 Bytes: 20->21		= Static Friction Combine		  (uint8_t)
+
+Remarks: 
+		(1.) ID should be equal to ('T' << 24) + ('A' << 16) + ('M' << 8) + 'P', which resolves to 1413565776.
+		
+// Structures and types to know.
+enum class PhysicsCombine : uint8_t {
+	Average,	// Adds two coefficients and uses the average.
+	Minimum,	// Uses the smaller of two coefficients.
+	Maximum,	// Uses the larger of two coefficients.
+	Multiply	// Uses the result of multiplying the first coefficient by the second.
+};
+
+struct PhysicsMaterial {
+	float bounciness; // 0 = No bounce / 1 = Bounces forever.
+	PhysicsCombine bouncinessCombine;
+	float dynamicFriction; // 0 = No dynamic friction / 1 = Full dynamic friction.
+	PhysicsCombine dynamicFrictionCombine;
+	float staticFriction; // 0 = No static friction / 1 = Full static friction.
+	PhysicsCombine staticFrictionCombine;
+}
