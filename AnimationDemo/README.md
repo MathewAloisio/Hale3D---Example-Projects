@@ -5,10 +5,10 @@
 > The following two screenshots compare the FPS in the scene with the first image having ***multithreading*** disabled and the second image ***multithreading*** is enabled. Note the FPS difference.
 
 
-> ![](https://github.com/MathewAloisio/Hale3D---Example-Projects/tree/master/AnimationDemo/MT-DISABLED.png)
+> ![](https://raw.githubusercontent.com/MathewAloisio/Hale3D---Example-Projects/master/AnimationDemo/MT-DISABLED.png "Multithreading Disabled")
 
 
-> ![](https://github.com/MathewAloisio/Hale3D---Example-Projects/tree/master/AnimationDemo/MT-ENABLED.png)
+> ![](https://raw.githubusercontent.com/MathewAloisio/Hale3D---Example-Projects/master/AnimationDemo/MT-ENABLED.png "Multithreading Enabled")
 
 > The scene shows the rendering of a large number of **uniquely** animated entities. Each entity in the demo has it's own skeleton, animations and bind-pose model buffers are shared however each entity has it's own model buffer.
 > - Each entity has 36 **uniquely** animated joints. Each joint of each entity is running it's own animation instance. Joints can be independently animated to play any animation at any time in the animations cycle without affecting other joints on the skeleton. For simplicity the engine always provides users with functions to apply animations to all joints in an entity with a single call, however this demo does not use that function.
