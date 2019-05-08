@@ -17,6 +17,7 @@ namespace Hale3D {
 	}
 
 	void App::Start() {
+		Time::SetTargetFPS(6000); // NOTE: This feature currently doesn't work as intended, set it to a higher value than intended!
 		Skybox::SetFallbackShader("cubemap"); // Tell the engine it can fallback on "cubemap" shader when a skybox is loaded with an invalid or unreadable shader path.
 		Texture::SetFallbackTexture("Resources/Textures/error.tga"); // Tell the engine it can fallback on "error.tga" when Texture::Load2D fails.
 		Material::SetFallbackMaterial("Resources/Materials/error.mat"); // Tell the engine it can fallback on "error.mat" when Material::Load fails.

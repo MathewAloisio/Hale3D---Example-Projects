@@ -2,6 +2,14 @@
 
 > A program that demonstrates the use of my game engine project in the animating of 3D models.
 
+> The following two screenshots compare the FPS in the scene with the first image having ***multithreading*** disabled and the second image ***multithreading*** is enabled. Note the FPS difference.
+
+
+> ![](https://github.com/MathewAloisio/Hale3D---Example-Projects/tree/master/AnimationDemo/MT-DISABLED.png)
+
+
+> ![](https://github.com/MathewAloisio/Hale3D---Example-Projects/tree/master/AnimationDemo/MT-ENABLED.png)
+
 > The scene shows the rendering of a large number of **uniquely** animated entities. Each entity in the demo has it's own skeleton, animations and bind-pose model buffers are shared however each entity has it's own model buffer.
 > - Each entity has 36 **uniquely** animated joints. Each joint of each entity is running it's own animation instance. Joints can be independently animated to play any animation at any time in the animations cycle without affecting other joints on the skeleton. For simplicity the engine always provides users with functions to apply animations to all joints in an entity with a single call, however this demo does not use that function.
 > - The engine makes use of **multhreading**. Every joint is sorted into as many lists are there are available threads on the computer, threads are then launched that calculate the animations of all joints as fast as possible, splitting the work evenly amongst all available threads before returning to the main application thread as quickly as possible. On my computer in this demo scene I experienced an increase in FPS from ~200 to ~225 just by splitting up this workload.
